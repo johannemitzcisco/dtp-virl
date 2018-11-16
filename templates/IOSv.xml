@@ -1,0 +1,79 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+    <name>{$VIRL-DEVICE-NAME}</name>
+      <config>
+      <simulation xmlns="http://com/example/ciscovirl">
+        <name>{$SIMULATION-NAME}</name>
+        <node>
+          <name>{$NODE-NAME}</name>
+          <connection-index>1</connection-index>
+          <type>{$NODE-TYPE}</type>
+          <subtype>{$NODE-SUBTYPE}</subtype>
+          <excludeFromLaunch>false</excludeFromLaunch>
+          <location>50,50</location>
+          <extensions>
+            <entry>
+              <key>config</key>
+              <type>String</type>
+              <value>
+! IOS Config from NSO DTP topology service (dtp-virl module IOS-XRv template)
+!
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/secondary-password}
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/username} privilege 15 secret {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/password}
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/password}
+ login local
+line con 0
+ password {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/password}
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet0/0
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ip address {/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/address} {/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/mask}
+  duplex full
+  speed auto
+  no shutdown
+!
+end
+              </value>
+            </entry>
+            <entry>
+              <key>static_ip</key>
+              <type>String</type>
+              <value>{/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/address}</value>
+            </entry>
+          </extensions>
+        </node>
+      </simulation>
+      </config>
+    </device>
+  </devices>
+</config-template>

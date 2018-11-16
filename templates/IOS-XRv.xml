@@ -1,0 +1,79 @@
+<config-template xmlns="http://tail-f.com/ns/config/1.0">
+  <devices xmlns="http://tail-f.com/ns/ncs">
+    <device>
+    <name>{$VIRL-DEVICE-NAME}</name>
+      <config>
+      <simulation xmlns="http://com/example/ciscovirl">
+        <name>{$SIMULATION-NAME}</name>
+        <node>
+          <name>{$NODE-NAME}</name>
+          <connection-index>1</connection-index>
+          <type>{$NODE-TYPE}</type>
+          <subtype>{$NODE-SUBTYPE}</subtype>
+          <excludeFromLaunch>false</excludeFromLaunch>
+          <location>50,50</location>
+          <extensions>
+            <entry>
+              <key>config</key>
+              <type>String</type>
+              <value>
+! Config from NSO DTP topology service (dtp-virl module IOS-XRv template)
+!
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+!!! ssh server v2
+!!! ssh server vrf Mgmt-intf
+!
+username {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/username} privilege 15 password {/node-type[type=/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/node-type]/nso-device/authorization/password}
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  ipv4 address {/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/address} {/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/mask}
+  no shutdown
+              </value>
+            </entry>
+            <entry>
+              <key>static_ip</key>
+              <type>String</type>
+              <value>{/network[name=$NETWORK-NAME]/node[name=$NODE-NAME]/address}</value>
+            </entry>
+          </extensions>
+        </node>
+      </simulation>
+      </config>
+    </device>
+  </devices>
+</config-template>

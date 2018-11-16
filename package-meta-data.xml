@@ -1,0 +1,13 @@
+<ncs-package xmlns="http://tail-f.com/ns/ncs-packages">
+  <name>dtp-virl</name>
+  <package-version>1.0</package-version>
+  <description>Generated Python package</description>
+  <ncs-min-version>4.7</ncs-min-version>
+
+  <!-- component>
+    <name>dtp_virl</name>
+    <application>
+      <python-class-name>dtp_virl.dtp_virl.DTPVirl</python-class-name>
+    </application>
+  </component -->
+</ncs-package>
